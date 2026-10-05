@@ -1,0 +1,21 @@
+{
+  "name": "bondi",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Bondi — o'quv sherigini topish platformasi (study · connect · grow)",
+  "workspaces": ["server", "client"],
+  "scripts": {
+    "dev": "concurrently -n server,client -c green,yellow \"npm run dev -w server\" \"npm run dev -w client\"",
+    "build": "npm run build -w client && npm run build -w server",
+    "start": "npm run start -w server",
+    "seed": "npm run seed -w server",
+    "test": "npm test -w server",
+    "typecheck": "npm run typecheck -w server && npm run typecheck -w client"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "engines": {
+    "node": ">=22.5"
+  }
+}
