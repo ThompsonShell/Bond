@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api, del, get, post, type Me, type PlaceType, type ProfileUser, type Schedule, type Stats } from '../api';
-import { MoreIcon, PlayIcon, StarIcon, UploadIcon } from '../components/Icons';
+import { BackIcon, MoreIcon, PlayIcon, StarIcon, UploadIcon } from '../components/Icons';
 import { Avatar, Button, Chip, ErrorBox, Field, Loader, Modal, TextArea, Toggle } from '../components/ui';
 import { dayAgo, duration, errMsg, firstName, PLACE_LABELS, SCHEDULE_LABELS, useFetch } from '../lib';
 import { useApp, useMe } from '../state';
@@ -39,7 +39,7 @@ function ProfileView({ userId, self }: { userId: number; self: boolean }) {
 
   if (loading) return <Loader />;
   if (error || !data) return <div className="page"><ErrorBox message={error || 'Topilmadi'} onRetry={() => reload()} /></div>;
-  const { user, stats, match } = data;
+  const { user, stats } = data;
 
   async function connect() {
     setConnecting(true);
@@ -54,33 +54,32 @@ function ProfileView({ userId, self }: { userId: number; self: boolean }) {
     }
   }
 
+  const actions = self ? null : (
+    <div className="btn-row">
+      {user.connected ? (
+        <Button onClick={() => navigate(`/chat/${user.id}`)}>Xabar yozish</Button>
+      ) : (
+        <Button loading={connecting} onClick={connect}>
+          Bog'lanish
+        </Button>
+      )}
+      <Button variant="secondary" onClick={() => navigate(`/chat/${user.id}`)}>
+        Chat
+      </Button>
+    </div>
+  );
+  const handle = `@${user.username} · ${user.city}${user.distanceKm != null && !self ? ` · ${user.distanceKm} km` : ''}`;
+  const bio = user.bio || (self ? "O'zingiz haqingizda yozing — “Profilni tahrirlash” tugmasini bosing." : 'Hali yozilmagan.');
+
   return (
     <div className="page profile">
-      <div className="profile-mobile-head">
-        <button className="icon-btn" onClick={() => navigate(-1)} aria-label="Orqaga">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M19 12H5M12 19l-7-7 7-7" />
-          </svg>
-        </button>
-        <b>Profil</b>
-        {self ? (
-          <button className="icon-btn" onClick={() => navigate('/settings')} aria-label="Sozlamalar">
-            <MoreIcon size={18} />
-          </button>
-        ) : (
-          <span style={{ width: 36 }} />
-        )}
-      </div>
-
+      {/* bondi-web.html · Profil */}
       <div className="profile-grid">
-        <div className="profile-left">
+        <div>
           <section className="card profile-card">
-            <Avatar name={user.name} color={user.avatarColor} size={128} radius={30} className="avatar-xl" online={user.online && !self} />
-            <h2>{user.name}</h2>
-            <div className="muted small">
-              @{user.username} · {user.city}
-              {user.distanceKm != null && !self ? ` · ${user.distanceKm} km` : ''}
-            </div>
+            <Avatar name={user.name} color={user.avatarColor} size={120} radius={32} className="avatar-xl" />
+            <div className="profile-name">{user.name}</div>
+            <div className="profile-handle">{handle}</div>
             <div className="profile-stats">
               <div>
                 <b>{stats.partners}</b>
@@ -100,56 +99,22 @@ function ProfileView({ userId, self }: { userId: number; self: boolean }) {
                 Profilni tahrirlash
               </Button>
             ) : (
-              <div className="btn-row">
-                {user.connected ? (
-                  <Button onClick={() => navigate(`/chat/${user.id}`)}>Xabar yozish</Button>
-                ) : (
-                  <Button loading={connecting} onClick={connect}>
-                    Bog'lanish
-                  </Button>
-                )}
-                <Button variant="secondary" onClick={() => navigate(`/chat/${user.id}`)}>
-                  Chat
-                </Button>
-              </div>
-            )}
-            {match && (
-              <div className="match-pill">
-                <b>{match.score}%</b> moslik{match.reasons.length ? ` · ${match.reasons.join(', ')}` : ''}
-              </div>
+              actions
             )}
           </section>
 
           <section className="card">
             <h3>Qiziqishlar</h3>
             <div className="chips">
-              {user.interests.length ? user.interests.map((t) => <Chip key={t}>{t}</Chip>) : <span className="faint">Hali qo'shilmagan</span>}
-            </div>
-          </section>
-
-          <section className="card">
-            <h3>O'qish uslubi</h3>
-            <div className="kv">
-              <span>Hozir</span>
-              <b>{user.subject || '—'}</b>
-            </div>
-            <div className="kv">
-              <span>Joy</span>
-              <b>
-                {user.place || '—'} {user.placeType ? `(${PLACE_LABELS[user.placeType]})` : ''}
-              </b>
-            </div>
-            <div className="kv">
-              <span>Vaqt</span>
-              <b>{SCHEDULE_LABELS[user.schedule]}</b>
+              {user.interests.length ? user.interests.map((t) => <Chip key={t}>{t}</Chip>) : <span className="faint small">Hali qo'shilmagan</span>}
             </div>
           </section>
         </div>
 
-        <div className="profile-right">
+        <div>
           <section className="card">
             <h3>About Me</h3>
-            <p className="about">{user.bio || (self ? "O'zingiz haqingizda yozing — “Profilni tahrirlash” tugmasini bosing." : "Hali yozilmagan.")}</p>
+            <p className="about">{bio}</p>
           </section>
 
           <VideoCard url={user.videoUrl} self={self} />
@@ -157,13 +122,13 @@ function ProfileView({ userId, self }: { userId: number; self: boolean }) {
           <section className="card">
             <h3>Yaqinda o'qigan</h3>
             {stats.recent.length === 0 ? (
-              <p className="faint">Hali o'quv seanslari yo'q.</p>
+              <p className="faint small">Hali o'quv seanslari yo'q.</p>
             ) : (
               <ul className="recent">
                 {stats.recent.map((r, i) => (
                   <li key={i}>
                     <span className="recent-icon">
-                      <StarIcon size={14} />
+                      <StarIcon size={16} />
                     </span>
                     <div>
                       <b>{r.title}</b>
@@ -172,7 +137,7 @@ function ProfileView({ userId, self }: { userId: number; self: boolean }) {
                         {r.partnerName ? ` · ${r.partnerName} bilan` : ''}
                       </small>
                     </div>
-                    <span className="faint small">{dayAgo(r.day)}</span>
+                    <span className="recent-when">{dayAgo(r.day)}</span>
                   </li>
                 ))}
               </ul>
@@ -181,16 +146,74 @@ function ProfileView({ userId, self }: { userId: number; self: boolean }) {
         </div>
       </div>
 
+      {/* bondi-app.html · 1i Profil */}
+      <div className="profile-m">
+        <div className="profile-m-head">
+          <div className="profile-m-bar">
+            <button className="icon-btn" onClick={() => navigate(-1)} aria-label="Orqaga">
+              <BackIcon />
+            </button>
+            <b>Profil</b>
+            {self ? (
+              <button className="icon-btn" onClick={() => navigate('/settings')} aria-label="Sozlamalar">
+                <MoreIcon size={20} />
+              </button>
+            ) : (
+              <span style={{ width: 24 }} />
+            )}
+          </div>
+          <Avatar name={user.name} color={user.avatarColor} size={80} radius={24} />
+          <div className="profile-name">{user.name}</div>
+          <div className="profile-handle">{handle}</div>
+          <div className="profile-m-stats">
+            <div>
+              <b>{stats.partners}</b>
+              <small>Sheriklar</small>
+            </div>
+            <div>
+              <b>{stats.hours}</b>
+              <small>Soat</small>
+            </div>
+            <div>
+              <b>{stats.essays}</b>
+              <small>Maqolalar</small>
+            </div>
+          </div>
+        </div>
+        {user.interests.length > 0 && (
+          <div className="profile-m-section chips">
+            {user.interests.map((t) => (
+              <Chip key={t}>{t}</Chip>
+            ))}
+          </div>
+        )}
+        <div className="profile-m-section">
+          <h4>About Me</h4>
+          <p>{bio}</p>
+        </div>
+        <div className="profile-m-section">
+          <h4>Video taqdimot</h4>
+          <VideoBox url={user.videoUrl} self={self} />
+        </div>
+        <div className="profile-m-section">
+          {self ? (
+            <button className="btn-outline" onClick={() => setEditing(true)}>
+              Profilni tahrirlash
+            </button>
+          ) : (
+            actions
+          )}
+        </div>
+      </div>
+
       {editing && <EditProfile onClose={() => setEditing(false)} />}
     </div>
   );
 }
 
-function VideoCard({ url, self }: { url: string | null; self: boolean }) {
+function useVideoManager() {
   const { setUser, toast } = useApp();
   const input = useRef<HTMLInputElement>(null);
-  const video = useRef<HTMLVideoElement>(null);
-  const [playing, setPlaying] = useState(false);
   const [busy, setBusy] = useState(false);
 
   async function upload(file: File) {
@@ -221,60 +244,98 @@ function VideoCard({ url, self }: { url: string | null; self: boolean }) {
     }
   }
 
-  if (!url && !self) return null;
+  const fileInput = (
+    <input
+      ref={input}
+      type="file"
+      accept="video/*"
+      hidden
+      onChange={(e) => {
+        const f = e.target.files?.[0];
+        if (f) upload(f);
+        e.target.value = '';
+      }}
+    />
+  );
+  return { busy, pick: () => input.current?.click(), remove, fileInput };
+}
 
+function fmt(sec: number) {
+  if (!Number.isFinite(sec)) return '0:00';
+  const s = Math.floor(sec);
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+}
+
+/** 16:9 player box with the design's round play button and "0:00 / 2:34" label. */
+function VideoBox({ url, self, manager }: { url: string | null; self: boolean; manager?: ReturnType<typeof useVideoManager> }) {
+  const own = useVideoManager();
+  const m = manager ?? own;
+  const video = useRef<HTMLVideoElement>(null);
+  const [playing, setPlaying] = useState(false);
+  const [time, setTime] = useState({ cur: 0, dur: NaN });
+
+  return (
+    <div className="video">
+      {url ? (
+        <>
+          <video
+            ref={video}
+            src={url}
+            controls={playing}
+            playsInline
+            preload="metadata"
+            onLoadedMetadata={(e) => setTime({ cur: 0, dur: e.currentTarget.duration })}
+            onTimeUpdate={(e) => setTime((t) => ({ ...t, cur: e.currentTarget.currentTime }))}
+            onPlay={() => setPlaying(true)}
+            onPause={() => setPlaying(false)}
+          />
+          {!playing && (
+            <>
+              <button className="play" onClick={() => video.current?.play()} aria-label="Ijro etish">
+                <PlayIcon size={24} />
+              </button>
+              <span className="video-time">
+                {fmt(time.cur)} / {fmt(time.dur)}
+              </span>
+            </>
+          )}
+        </>
+      ) : self ? (
+        <>
+          <button className="play" onClick={m.pick} disabled={m.busy} aria-label="Video yuklash" title="Video yuklash">
+            {m.busy ? <span className="spinner" /> : <UploadIcon size={22} />}
+          </button>
+          <span className="video-upload-label">Video yuklash · maks. 50 MB</span>
+        </>
+      ) : (
+        <span className="faint small">Video yo'q</span>
+      )}
+      {!manager && m.fileInput}
+    </div>
+  );
+}
+
+function VideoCard({ url, self }: { url: string | null; self: boolean }) {
+  const m = useVideoManager();
+  if (!url && !self) return null;
   return (
     <section className="card">
       <h3>Video taqdimot</h3>
-      <div className="video">
-        {url ? (
-          <>
-            <video
-              ref={video}
-              src={url}
-              controls={playing}
-              playsInline
-              preload="metadata"
-              onPlay={() => setPlaying(true)}
-              onEnded={() => setPlaying(false)}
-            />
-            {!playing && (
-              <button className="play" onClick={() => video.current?.play()} aria-label="Ijro etish">
-                <PlayIcon size={22} />
-              </button>
-            )}
-          </>
-        ) : (
-          <button className="video-upload" onClick={() => input.current?.click()} disabled={busy}>
-            {busy ? <span className="spinner" /> : <UploadIcon size={28} />}
-            <span>Video yuklash (maks. 50 MB)</span>
-          </button>
-        )}
-      </div>
+      <VideoBox url={url} self={self} manager={m} />
       <div className="video-foot">
-        <span className="faint small">O'zim haqimda qisqacha — o'quv uslubi va maqsadlarim.</span>
+        <span>O'zim haqimda qisqacha — o'quv uslubi va maqsadlarim.</span>
         {self && url && (
           <span className="btn-row-inline">
-            <button className="link-btn" onClick={() => input.current?.click()} disabled={busy}>
+            <button className="link-btn" onClick={m.pick} disabled={m.busy}>
               Almashtirish
             </button>
-            <button className="link-btn danger" onClick={remove} disabled={busy}>
+            <button className="link-btn danger" onClick={m.remove} disabled={m.busy}>
               O'chirish
             </button>
           </span>
         )}
       </div>
-      <input
-        ref={input}
-        type="file"
-        accept="video/*"
-        hidden
-        onChange={(e) => {
-          const f = e.target.files?.[0];
-          if (f) upload(f);
-          e.target.value = '';
-        }}
-      />
+      {m.fileInput}
     </section>
   );
 }

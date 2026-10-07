@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BellIcon, ChevronIcon, GlobeIcon, LockIcon, PinIcon, SunIcon } from '../components/Icons';
+import { BackIcon, BellIcon, ChevronIcon, GlobeIcon, LockIcon, PinIcon, SunIcon } from '../components/Icons';
 import { PageHeader } from '../components/Layout';
 import { Avatar, Toggle } from '../components/ui';
 import { errMsg } from '../lib';
@@ -34,10 +34,16 @@ export function Settings() {
   }
 
   return (
-    <div className="page narrow">
+    <div className="page narrow settings-page">
       <PageHeader title="Sozlamalar" back />
+      <div className="settings-title mob-only">
+        <button className="icon-btn" onClick={() => navigate(-1)} aria-label="Orqaga">
+          <BackIcon size={20} />
+        </button>
+        <span>Sozlamalar</span>
+      </div>
 
-      <button className="card settings-profile" onClick={() => navigate('/profile')}>
+      <button className="settings-profile" onClick={() => navigate('/profile')}>
         <Avatar name={me.name} color={me.avatarColor} size={48} radius={14} />
         <span>
           <b>{me.name}</b>
@@ -47,7 +53,7 @@ export function Settings() {
       </button>
 
       <div className="group-label">Umumiy</div>
-      <div className="card settings-group">
+      <div className="settings-group">
         <button className="setting-row" onClick={() => navigate('/notifications')}>
           <BellIcon size={18} />
           <span>Bildirishnomalar</span>
@@ -58,23 +64,18 @@ export function Settings() {
           <GlobeIcon size={18} />
           <span>Til / Language</span>
           <span className="setting-value">O'zbek</span>
+          <ChevronIcon size={16} />
         </div>
-        <div className="setting-row">
+        <button className="setting-row" onClick={() => setTheme(theme === 'green' ? 'light' : 'green')}>
           <SunIcon size={18} />
           <span>Rejim</span>
-          <div className="seg seg-sm">
-            <button className={theme === 'green' ? 'active' : ''} onClick={() => setTheme('green')}>
-              🌿 Yashil
-            </button>
-            <button className={theme === 'light' ? 'active' : ''} onClick={() => setTheme('light')}>
-              ☀️ Yorug'
-            </button>
-          </div>
-        </div>
+          <span className="setting-value">{theme === 'green' ? 'Yashil' : "Yorug'"}</span>
+          <ChevronIcon size={16} />
+        </button>
       </div>
 
       <div className="group-label">Maxfiylik</div>
-      <div className="card settings-group">
+      <div className="settings-group">
         <div className="setting-row">
           <PinIcon size={18} />
           <span>Joylashuvni ko'rsatish</span>

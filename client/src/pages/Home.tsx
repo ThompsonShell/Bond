@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { del, post, type Session, type Stats } from '../api';
 import { BellIcon, SearchIcon, StarIcon } from '../components/Icons';
 import { Avatar, Button, Empty, ErrorBox, Loader } from '../components/ui';
@@ -21,15 +21,19 @@ export function Home() {
   const [q, setQ] = useState('');
   const stats = useFetch<Stats>('/stats/me');
   const now = useFetch<{ users: StudyingUser[] }>('/users/studying-now', 30_000);
+  const count = now.data?.users.length ?? '…';
 
   return (
     <div className="page">
       <header className="page-head">
         <div>
           <h2>Xush kelibsiz, {firstName(me.name)}!</h2>
-          <p className="muted">Bugun sizga mos {now.data?.users.length ?? '…'} ta sherik onlaynda</p>
+          <div className="page-sub desk-only">Bugun sizga mos {count} ta sherik onlaynda</div>
+          <Link to="/matching" className="page-sub mob-only">
+            Bugun {count} ta mos sherik
+          </Link>
         </div>
-        <div className="page-head-right">
+        <div className="page-head-right desk-only">
           <form
             className="search"
             onSubmit={(e) => {
@@ -41,7 +45,7 @@ export function Home() {
             <input placeholder="Sheriklarni qidiring..." value={q} onChange={(e) => setQ(e.target.value)} aria-label="Sheriklarni qidirish" />
           </form>
           <button className="bell" onClick={() => navigate('/notifications')} aria-label="Bildirishnomalar">
-            <BellIcon size={18} />
+            <BellIcon size={20} />
             {unread.notifications > 0 && <span className="bell-dot" />}
           </button>
         </div>
@@ -55,7 +59,7 @@ export function Home() {
           hint={stats.data ? `${stats.data.partnersThisWeek} yangi so'nggi haftada` : ''}
           tone="amber"
         />
-        <StatCard label="Maqolalar" value={stats.data?.essays} hint={stats.data ? `Kunlik seriya: ${stats.data.streak} kun` : ''} tone="blue" />
+        <StatCard label="Maqolalar" value={stats.data?.essays} hint={stats.data ? `Kunlik seriya: ${stats.data.streak} kun` : ''} tone="blue" className="desk-only" />
       </div>
 
       <div className="home-grid">
@@ -69,7 +73,7 @@ export function Home() {
       ) : now.error ? (
         <ErrorBox message={now.error} onRetry={() => now.reload()} />
       ) : now.data!.users.length === 0 ? (
-        <Empty title="Hozir hech kim o'qimayapti" hint="Birinchi bo'ling — profilingizda “Hozir o'qiyapman” ni yoqing." />
+        <Empty title="Hozir hech kim o'qimayapti" hint="Profilingizda “Hozir o'qiyapman” ni yoqib, birinchi bo'ling." />
       ) : (
         <div className="people-grid">
           {now.data!.users.map((u) => (
@@ -81,12 +85,12 @@ export function Home() {
   );
 }
 
-function StatCard({ label, value, hint, tone }: { label: string; value?: number; hint: string; tone: 'green' | 'amber' | 'blue' }) {
+function StatCard({ label, value, hint, tone, className = '' }: { label: string; value?: number; hint: string; tone: 'green' | 'amber' | 'blue'; className?: string }) {
   return (
-    <div className={`stat stat-${tone}`}>
+    <div className={`card stat stat-${tone} ${className}`}>
       <div className="stat-label">{label}</div>
       <div className="stat-value">{value ?? '–'}</div>
-      <div className="stat-hint">{hint}</div>
+      <div className="stat-hint desk-only">{hint}</div>
     </div>
   );
 }
@@ -95,6 +99,7 @@ function DailyEssay({ onSaved }: { onSaved: (s: Stats) => void }) {
   const { toast } = useApp();
   const essay = useFetch<EssayToday>('/essays/today');
   const [text, setText] = useState('');
+  const [focused, setFocused] = useState(false);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -119,24 +124,28 @@ function DailyEssay({ onSaved }: { onSaved: (s: Stats) => void }) {
   }
 
   return (
-    <section className="card essay">
-      <div className="essay-label">
-        <StarIcon size={14} /> Kunlik maqola
+    <section className={`essay ${focused || text ? 'active' : ''}`}>
+      <div className="essay-label desk-only">
+        <StarIcon size={16} /> Kunlik maqola
       </div>
-      <h3 className="essay-prompt">{essay.data?.prompt ?? '…'}</h3>
+      <div className="essay-label-m mob-only">📝 Kunlik maqola</div>
+      <div className="essay-prompt">{essay.data?.prompt ?? '…'}</div>
       <textarea
         className="essay-input"
         placeholder="Fikringizni yozing..."
+        rows={1}
         value={text}
         maxLength={max}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
         onChange={(e) => setText(e.target.value)}
         aria-label="Kunlik maqola"
       />
       <div className="essay-foot">
-        <span className="faint">
+        <span>
           {text.length} / {max} belgi
         </span>
-        <Button size="sm" onClick={save} loading={busy} disabled={!text.trim() || saved}>
+        <Button onMouseDown={(e) => e.preventDefault()} onClick={save} loading={busy} disabled={!text.trim() || saved}>
           {saved ? 'Saqlangan ✓' : 'Saqlash'}
         </Button>
       </div>
@@ -166,7 +175,7 @@ function TodaySessions() {
   }
 
   return (
-    <section className="card sessions">
+    <section className="card desk-only">
       <h3>Bugungi seans</h3>
       {loading ? (
         <Loader />
@@ -175,29 +184,26 @@ function TodaySessions() {
       ) : data!.sessions.length === 0 ? (
         <Empty title="Bugun seans yo'q" hint="Chatda sherigingizga seans taklif qiling." />
       ) : (
-        data!.sessions.map((s) => {
-          const isCreator = s.creator?.id === me.id;
-          return (
-            <div key={s.id} className="session-item">
-              <div className="session-box">
-                <b>{s.title}</b>
-                <small>
-                  {s.place} · {timeHM(s.startsAt)}
-                </small>
-                <div className="stack">
-                  {s.participants.slice(0, 5).map((p) => (
-                    <Avatar key={p.id} name={p.name} color={p.avatarColor} size={24} radius={12} />
-                  ))}
-                </div>
+        data!.sessions.map((s) => (
+          <div key={s.id} className="session-item">
+            <div className="session-box">
+              <b>{s.title}</b>
+              <small>
+                {s.place} · {timeHM(s.startsAt)}
+              </small>
+              <div className="stack">
+                {s.participants.slice(0, 5).map((p) => (
+                  <Avatar key={p.id} name={p.name} color={p.avatarColor} size={24} radius={12} />
+                ))}
               </div>
-              {!isCreator && (
-                <Button block variant={s.joined ? 'secondary' : 'primary'} loading={busy === s.id} onClick={() => toggle(s)}>
-                  {s.joined ? "Qo'shildingiz ✓" : "Qo'shilish"}
-                </Button>
-              )}
             </div>
-          );
-        })
+            {s.creator?.id !== me.id && (
+              <Button block loading={busy === s.id} variant={s.joined ? 'secondary' : 'primary'} onClick={() => toggle(s)}>
+                {s.joined ? "Qo'shildingiz ✓" : "Qo'shilish"}
+              </Button>
+            )}
+          </div>
+        ))
       )}
     </section>
   );
@@ -209,7 +215,7 @@ function StudyingCard({ user }: { user: StudyingUser }) {
   return (
     <div className="card person">
       <div className="person-row">
-        <Avatar name={user.name} color={user.avatarColor} size={44} />
+        <Avatar name={user.name} color={user.avatarColor} size={44} radius={12} />
         <button className="person-text" onClick={() => navigate(`/u/${user.id}`)}>
           <b>{user.name}</b>
           <small>
@@ -220,7 +226,7 @@ function StudyingCard({ user }: { user: StudyingUser }) {
       </div>
       <div className="btn-row">
         <Button onClick={() => navigate(`/chat/${user.id}?join=1`)}>{online ? 'Online' : "Qo'shilish"}</Button>
-        <Button variant="secondary" onClick={() => navigate(`/chat/${user.id}`)}>
+        <Button variant="secondary" className="desk-only" onClick={() => navigate(`/chat/${user.id}`)}>
           Chat
         </Button>
       </div>

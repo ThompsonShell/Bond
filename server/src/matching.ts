@@ -7,7 +7,7 @@ export interface Match {
 }
 
 /**
- * Compatibility score (0–99) between two students.
+ * Compatibility score (1–96) between two students.
  *  - shared interests carry most of the weight (Jaccard similarity)
  *  - same study schedule ("Bir xil soat")
  *  - physical proximity ("Yaqin hudud")
@@ -20,10 +20,10 @@ export function matchScore(db: DB, me: UserRow, other: UserRow): Match {
   const union = new Set([...a, ...b]).size || 1;
   const reasons: string[] = [];
 
-  let score = 22 + (shared / union) * 45;
+  let score = 50 + (shared / union) * 30;
 
   if (me.schedule === other.schedule) {
-    score += 10;
+    score += 8;
     reasons.push('Bir xil soat');
   }
   if (shared >= 2 || (me.subject && me.subject.toLowerCase() === other.subject.toLowerCase())) {
@@ -33,7 +33,7 @@ export function matchScore(db: DB, me: UserRow, other: UserRow): Match {
   if (me.lat != null && me.lng != null && other.lat != null && other.lng != null && other.share_location) {
     const d = distanceKm(me.lat, me.lng, other.lat, other.lng);
     if (d < 5) {
-      score += 8;
+      score += 6;
       reasons.push('Yaqin hudud');
     } else if (d < 15) {
       score += 4;
@@ -45,5 +45,5 @@ export function matchScore(db: DB, me: UserRow, other: UserRow): Match {
   const labels: Record<string, string> = { morning: 'Ertalab', day: 'Kunduz', evening: 'Kechqurun' };
   if (!reasons.includes('Bir xil soat') && labels[other.schedule]) reasons.push(labels[other.schedule]);
 
-  return { score: Math.max(1, Math.min(99, Math.round(score))), reasons: reasons.slice(0, 3) };
+  return { score: Math.max(1, Math.min(96, Math.round(score))), reasons: reasons.slice(0, 3) };
 }

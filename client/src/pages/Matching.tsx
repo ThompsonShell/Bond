@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { post, type MatchUser } from '../api';
 import { Avatar, Button, Empty, ErrorBox, Loader, Tag } from '../components/ui';
 import { PageHeader } from '../components/Layout';
-import { errMsg, firstName, useFetch } from '../lib';
+import { errMsg, firstName, useFetch, useIsMobile } from '../lib';
 import { useApp } from '../state';
 
 export function Matching() {
@@ -13,6 +13,7 @@ export function Matching() {
   const q = (params.get('q') || '').toLowerCase();
   const { data, setData, loading, error, reload } = useFetch<{ users: MatchUser[] }>('/users/matches');
   const [busy, setBusy] = useState<number | null>(null);
+  const isMobile = useIsMobile();
 
   const users = (data?.users ?? []).filter(
     (u) => !q || [u.name, u.username, u.subject, ...u.interests].some((s) => s.toLowerCase().includes(q)),
@@ -32,10 +33,16 @@ export function Matching() {
   }
 
   return (
-    <div className="page">
+    <div className="page match-page">
       <PageHeader
         title="Sizga mos sheriklar"
-        subtitle={data ? `AI qiziqishlaringizga mos ${users.length} ta sherik topdi${q ? ` · “${q}”` : ''}` : 'AI sheriklarni tahlil qilmoqda…'}
+        subtitle={
+          data
+            ? isMobile
+              ? 'AI sizning qiziqishlaringizga mos topdi'
+              : `AI qiziqishlaringizga mos ${users.length} ta sherik topdi${q ? ` · “${q}”` : ''}`
+            : 'AI sheriklarni tahlil qilmoqda…'
+        }
       />
       {loading ? (
         <Loader />
@@ -49,15 +56,20 @@ export function Matching() {
             <article key={u.id} className="card match">
               <div className="match-top">
                 <Avatar name={u.name} color={u.avatarColor} size={56} radius={16} />
-                <div className="score">
-                  <b>{u.score}%</b>
-                  <small>moslik</small>
-                </div>
+                <Score value={u.score} />
               </div>
-              <button className="match-name" onClick={() => navigate(`/u/${u.id}`)}>
+              <div className="match-head-m">
+                <Avatar name={u.name} color={u.avatarColor} size={48} radius={16} />
+                <button className="person-text" onClick={() => navigate(`/u/${u.id}`)}>
+                  <b>{u.name}</b>
+                  <small>{subline(u)}</small>
+                </button>
+                <Score value={u.score} />
+              </div>
+              <button className="match-name desk-only" onClick={() => navigate(`/u/${u.id}`)}>
                 {u.name}
               </button>
-              <div className="match-sub">{[u.interests[0], u.subject].filter((v, i, a) => v && a.indexOf(v) === i).join(' · ')}</div>
+              <div className="match-sub desk-only">{subline(u)}</div>
               <p className="match-bio">{u.bio}</p>
               {u.reasons.length > 0 && (
                 <div className="tags">
@@ -81,4 +93,17 @@ export function Matching() {
       )}
     </div>
   );
+}
+
+function Score({ value }: { value: number }) {
+  return (
+    <div className="score">
+      <b>{value}%</b>
+      <small>moslik</small>
+    </div>
+  );
+}
+
+function subline(u: MatchUser) {
+  return [u.interests[0], u.subject].filter((v, i, a) => v && a.indexOf(v) === i).join(' · ');
 }

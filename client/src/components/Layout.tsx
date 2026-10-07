@@ -1,13 +1,12 @@
 import type { ReactNode } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useApp, useMe } from '../state';
-import { BackIcon, ChatIcon, HomeIcon, LoginIcon, LogoutIcon, PinIcon, SettingsIcon, UserIcon, UserPlusIcon } from './Icons';
+import { BackIcon, ChatIcon, HomeIcon, LoginIcon, LogoutIcon, PinIcon, UserIcon, UserPlusIcon } from './Icons';
 import { Avatar, Logo } from './ui';
 
 interface NavDef {
   to: string;
   label: string;
-  short: string;
   icon: (p: { filled?: boolean }) => ReactNode;
   badge?: number;
 }
@@ -30,41 +29,65 @@ function SideNav({ items }: { items: NavDef[] }) {
   );
 }
 
+/** The "🌿 Green / ☀️ Light" pill from the design files. */
+export function ModeBar() {
+  const { theme, setTheme } = useApp();
+  // Keep the chat composer clear.
+  if (useLocation().pathname.startsWith('/chat')) return null;
+  return (
+    <div className="modebar" role="group" aria-label="Rejim">
+      <button className={theme === 'green' ? 'on' : ''} onClick={() => setTheme('green')}>
+        🌿 Green
+      </button>
+      <button className={theme === 'light' ? 'on' : ''} onClick={() => setTheme('light')}>
+        ☀️ Light
+      </button>
+    </div>
+  );
+}
+
 export function AppLayout() {
   const me = useMe();
   const { unread, logout } = useApp();
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  const items: NavDef[] = [
-    { to: '/home', label: 'Bosh sahifa', short: 'Bosh sahifa', icon: (p) => <HomeIcon {...p} /> },
-    { to: '/map', label: 'Xarita', short: 'Xarita', icon: (p) => <PinIcon {...p} /> },
-    { to: '/chat', label: 'Xabarlar', short: 'Chat', icon: (p) => <ChatIcon {...p} />, badge: unread.messages },
-    { to: '/matching', label: 'Mos sheriklar', short: 'Moslik', icon: (p) => <UserPlusIcon {...p} /> },
-    { to: '/profile', label: 'Profil', short: 'Profil', icon: (p) => <UserIcon {...p} /> },
+  // Sidebar items — bondi-web.html
+  const side: NavDef[] = [
+    { to: '/home', label: 'Bosh sahifa', icon: (p) => <HomeIcon {...p} /> },
+    { to: '/map', label: 'Xarita', icon: (p) => <PinIcon {...p} /> },
+    { to: '/chat', label: 'Xabarlar', icon: (p) => <ChatIcon {...p} />, badge: unread.messages },
+    { to: '/matching', label: 'Mos sheriklar', icon: (p) => <UserPlusIcon {...p} /> },
+    { to: '/profile', label: 'Profil', icon: (p) => <UserIcon {...p} /> },
+  ];
+  // Bottom tab bar — bondi-app.html
+  const tabs: NavDef[] = [
+    { to: '/home', label: 'Bosh sahifa', icon: (p) => <HomeIcon {...p} /> },
+    { to: '/map', label: 'Xarita', icon: (p) => <PinIcon {...p} /> },
+    { to: '/chat', label: 'Chat', icon: (p) => <ChatIcon {...p} />, badge: unread.messages },
+    { to: '/profile', label: 'Profil', icon: (p) => <UserIcon {...p} /> },
   ];
 
-  // Full-screen chat conversation on mobile hides the tab bar (as in the app design).
+  // The full-screen conversation hides the tab bar (as in the app design).
   const hideTabs = /^\/chat\/\d+/.test(pathname);
+  // Social/discovery screens use the darker background on mobile.
+  const deep = !/^\/(home|map)/.test(pathname);
 
   return (
     <div className="shell">
       <aside className="side">
         <Logo />
-        <SideNav items={items} />
+        <SideNav items={side} />
         <div className="side-user">
-          <button className="side-user-main" onClick={() => navigate('/profile')}>
+          <button className="side-user-main" onClick={() => navigate('/settings')} title="Sozlamalar">
             <Avatar name={me.name} color={me.avatarColor} size={40} radius={12} />
             <span className="side-user-text">
               <b>{me.name}</b>
               <small>@{me.username}</small>
             </span>
           </button>
-          <button className="icon-btn" onClick={() => navigate('/settings')} aria-label="Sozlamalar" title="Sozlamalar">
-            <SettingsIcon size={18} />
-          </button>
           <button
-            className="icon-btn"
+            className="side-logout"
             onClick={() => {
               logout();
               navigate('/login');
@@ -72,18 +95,18 @@ export function AppLayout() {
             aria-label="Chiqish"
             title="Chiqish"
           >
-            <LogoutIcon size={18} />
+            <LogoutIcon size={16} />
           </button>
         </div>
       </aside>
 
-      <main className="main">
+      <main className={`main ${deep ? 'main-deep' : ''}`}>
         <Outlet />
       </main>
 
       {!hideTabs && (
         <nav className="tabbar">
-          {items.map((it) => (
+          {tabs.map((it) => (
             <NavLink key={it.to} to={it.to} className={({ isActive }) => `tab ${isActive ? 'active' : ''}`}>
               {({ isActive }) => (
                 <>
@@ -91,22 +114,23 @@ export function AppLayout() {
                     {it.icon({ filled: isActive })}
                     {!!it.badge && <em className="tab-badge">{it.badge}</em>}
                   </span>
-                  <span>{it.short}</span>
+                  <span>{it.label}</span>
                 </>
               )}
             </NavLink>
           ))}
         </nav>
       )}
+      <ModeBar />
     </div>
   );
 }
 
 export function AuthLayout() {
   const items: NavDef[] = [
-    { to: '/login', label: 'Kirish', short: 'Kirish', icon: (p) => <LoginIcon {...p} /> },
-    { to: '/register', label: "Ro'yxat", short: "Ro'yxat", icon: (p) => <UserPlusIcon {...p} /> },
-    { to: '/home', label: 'Bosh sahifa', short: 'Bosh sahifa', icon: (p) => <HomeIcon {...p} /> },
+    { to: '/login', label: 'Kirish', icon: (p) => <LoginIcon {...p} /> },
+    { to: '/register', label: "Ro'yxat", icon: (p) => <UserPlusIcon {...p} /> },
+    { to: '/home', label: 'Bosh sahifa', icon: (p) => <HomeIcon {...p} /> },
   ];
   return (
     <div className="shell shell-auth">
@@ -117,6 +141,7 @@ export function AuthLayout() {
       <main className="main main-center">
         <Outlet />
       </main>
+      <ModeBar />
     </div>
   );
 }
@@ -133,7 +158,7 @@ export function PageHeader({ title, subtitle, right, back }: { title: string; su
         )}
         <div>
           <h2>{title}</h2>
-          {subtitle && <p className="muted">{subtitle}</p>}
+          {subtitle && <div className="page-sub">{subtitle}</div>}
         </div>
       </div>
       {right && <div className="page-head-right">{right}</div>}

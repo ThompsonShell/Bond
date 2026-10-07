@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { get } from '../api';
-import { CheckIcon } from '../components/Icons';
+import { BackIcon, CheckIcon } from '../components/Icons';
 import { Button, Field, LogoMark, TextArea } from '../components/ui';
 import { errMsg } from '../lib';
 import { useApp, useMe } from '../state';
@@ -62,12 +62,19 @@ export function Login() {
 
   return (
     <form className="auth-card" onSubmit={submit}>
+      <div className="auth-m-brand">
+        <div className="logo-tile">
+          <LogoMark />
+        </div>
+        <b>Bondi</b>
+      </div>
       <div className="auth-hero">
         <div className="auth-hero-tile">
           <LogoMark size={40} />
         </div>
-        <h1>Xush kelibsiz</h1>
-        <p className="muted">Hisobingizga kiring</p>
+        <h1 className="auth-title desk-only">Xush kelibsiz</h1>
+        <h1 className="auth-title mob-only">Qaytib kelganingizdan xursandmiz!</h1>
+        <p className="auth-sub">Hisobingizga kiring</p>
       </div>
       <Field label="Email" type="text" autoComplete="username" placeholder="user@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
       <Field label="Parol" type="password" autoComplete="current-password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
@@ -86,16 +93,6 @@ export function Login() {
       <p className="auth-switch">
         Hisobingiz yo'qmi? <Link to="/register">Ro'yxatdan o'ting</Link>
       </p>
-      <button
-        type="button"
-        className="demo-hint"
-        onClick={() => {
-          setEmail('aziz@bondi.uz');
-          setPassword('bondi1234');
-        }}
-      >
-        Demo hisob: aziz@bondi.uz / bondi1234
-      </button>
     </form>
   );
 }
@@ -137,11 +134,14 @@ export function Register() {
 
   return (
     <form className="auth-card" onSubmit={submit}>
+      <Link to="/login" className="auth-back" aria-label="Orqaga">
+        <BackIcon size={22} />
+      </Link>
       <div className="auth-hero">
-        <h1>Yangi hisob yarating</h1>
-        <p className="muted">O'rganish sherigingizni toping</p>
+        <h1 className="auth-title">Yangi hisob yarating</h1>
+        <p className="auth-sub">O'rganish sherigingizni toping</p>
       </div>
-      <Field label="To'liq ism" placeholder="Ismingiz" autoComplete="name" value={form.name} onChange={set('name')} required />
+      <Field label="To'liq ism" placeholder="Ismingizni kiriting" autoComplete="name" value={form.name} onChange={set('name')} required />
       <Field label="Email" type="email" placeholder="email@example.com" autoComplete="email" value={form.email} onChange={set('email')} required />
       <Field label="Parol" type="password" placeholder="Kamida 8 belgi" autoComplete="new-password" value={form.password} onChange={set('password')} required minLength={8} />
       <Field
@@ -151,13 +151,14 @@ export function Register() {
         onChange={set('username')}
         required
         error={avail && !avail.available ? avail.reason : null}
+        valid={!!avail?.available}
         right={avail?.available ? <CheckIcon size={18} /> : null}
       />
       {error && <div className="form-error">{error}</div>}
       <Button type="submit" block size="lg" loading={busy} disabled={avail?.available === false}>
         Ro'yxatdan o'tish
       </Button>
-      <p className="auth-switch">
+      <p className="auth-switch desk-only">
         Hisobingiz bormi? <Link to="/login">Kirish</Link>
       </p>
     </form>
@@ -197,15 +198,11 @@ export function Onboarding() {
 
   return (
     <div className="auth-card onboarding">
-      <div className="steps">
-        <span className={step >= 0 ? 'on' : ''} />
-        <span className={step >= 1 ? 'on' : ''} />
-      </div>
       {step === 0 ? (
         <>
-          <div className="auth-hero left">
-            <h1>O'zingiz haqida yozing</h1>
-            <p className="muted">Boshqa studentlar siz haqingizni bilib olishlari uchun</p>
+          <div className="auth-hero">
+            <h1 className="auth-title">O'zingiz haqida yozing</h1>
+            <p className="auth-sub">Boshqa studentlar siz haqingizni bilib olishlari uchun</p>
           </div>
           <TextArea
             label="Bio"
@@ -221,9 +218,9 @@ export function Onboarding() {
         </>
       ) : (
         <>
-          <div className="auth-hero left">
-            <h1>Qiziqishlaringiz</h1>
-            <p className="muted">Sizga mos sheriklarni topish uchun 3 tasini tanlang</p>
+          <div className="auth-hero">
+            <h1 className="auth-title">Qiziqishlaringiz</h1>
+            <p className="auth-sub">Sizga mos sheriklarni topish uchun 3 tasini tanlang</p>
           </div>
           <div className="interest-grid">
             {options.map((t) => (
@@ -233,11 +230,8 @@ export function Onboarding() {
             ))}
           </div>
           <Button block size="lg" loading={busy} disabled={picked.length < 3} onClick={finish}>
-            {picked.length < 3 ? `Yana ${3 - picked.length} ta tanlang` : 'Tayyor'}
+            Tayyor
           </Button>
-          <button type="button" className="link-btn" onClick={() => setStep(0)}>
-            Orqaga
-          </button>
         </>
       )}
     </div>
