@@ -170,7 +170,7 @@ export function usersRouter(db: DB, uploadDir: string) {
     res.json({ users: out });
   });
 
-  /** People studying nearby right now (map), with offsets (km) relative to the viewer. */
+  /** People nearby for the map, with offsets (km) relative to the viewer. */
   r.get('/nearby', (req, res) => {
     const me = getUser(db, uid(res))!;
     const filter = String(req.query.filter || 'all');
@@ -179,9 +179,7 @@ export function usersRouter(db: DB, uploadDir: string) {
     if (me.lat == null || me.lng == null) return res.json({ users: [], center: null });
 
     const rows = db
-      .prepare(
-        'SELECT * FROM users WHERE id != ? AND hidden = 0 AND is_studying = 1 AND share_location = 1 AND lat IS NOT NULL AND lng IS NOT NULL',
-      )
+      .prepare('SELECT * FROM users WHERE id != ? AND hidden = 0 AND share_location = 1 AND lat IS NOT NULL AND lng IS NOT NULL')
       .all(me.id) as unknown as UserRow[];
     const out = rows
       .filter((u) => filter === 'all' || u.place_type === filter)
@@ -197,12 +195,10 @@ export function usersRouter(db: DB, uploadDir: string) {
     res.json({ users: out, center: { lat: me.lat, lng: me.lng } });
   });
 
-  /** AI matching: ranked new partners (not yet connected) with a compatibility score. */
+  /** AI matching: ranked partners with a compatibility score. */
   r.get('/matches', (_req, res) => {
     const me = getUser(db, uid(res))!;
-    const rows = db
-      .prepare('SELECT * FROM users WHERE id != ? AND hidden = 0 AND id NOT IN (SELECT partner_id FROM connections WHERE user_id = ?)')
-      .all(me.id, me.id) as unknown as UserRow[];
+    const rows = db.prepare('SELECT * FROM users WHERE id != ? AND hidden = 0').all(me.id) as unknown as UserRow[];
     const out = rows
       .map((u) => {
         const m = matchScore(db, me, u);

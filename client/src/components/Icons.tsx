@@ -19,46 +19,38 @@ function base({ size = 20, ...rest }: P, filled = false): SVGProps<SVGSVGElement
 
 const strip = ({ filled: _f, ...p }: P) => p;
 
-/** Navigation icons: outline when idle, solid fill (no stroke) when active — as in the design. */
-function navProps(p: P): SVGProps<SVGSVGElement> {
-  const { size = 20, filled, ...rest } = p;
-  return filled
-    ? { width: size, height: size, viewBox: '0 0 24 24', fill: 'currentColor', stroke: 'none', 'aria-hidden': true, ...rest }
-    : { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, 'aria-hidden': true, ...rest };
-}
-
 export const HomeIcon = (p: P) => (
-  <svg {...navProps(p)}>
+  <svg {...base(strip(p), p.filled)}>
     <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
   </svg>
 );
 export const PinIcon = (p: P) => (
-  <svg {...navProps(p)}>
-    <circle cx="12" cy="10" r="3" />
-    <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 10-16 0c0 3 2.7 7 8 11.7z" />
+  <svg {...base(strip(p))}>
+    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" fill={p.filled ? 'currentColor' : 'none'} />
+    <circle cx="12" cy="10" r="3" fill={p.filled ? 'var(--nav-active-bg)' : 'none'} stroke={p.filled ? 'var(--nav-active-bg)' : 'currentColor'} />
   </svg>
 );
 export const ChatIcon = (p: P) => (
-  <svg {...navProps(p)}>
+  <svg {...base(strip(p), p.filled)}>
     <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
   </svg>
 );
 export const UserPlusIcon = (p: P) => (
-  <svg {...navProps(p)}>
+  <svg {...base(strip(p))}>
     <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-    <circle cx="8.5" cy="7" r="4" />
-    {!p.filled && <path d="M20 8v6M23 11h-6" />}
+    <circle cx="8.5" cy="7" r="4" fill={p.filled ? 'currentColor' : 'none'} />
+    <path d="M20 8v6M23 11h-6" />
   </svg>
 );
 export const UserIcon = (p: P) => (
-  <svg {...navProps(p)}>
-    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-    <circle cx="12" cy="7" r="4" />
+  <svg {...base(strip(p))}>
+    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" fill={p.filled ? 'currentColor' : 'none'} />
+    <circle cx="12" cy="7" r="4" fill={p.filled ? 'currentColor' : 'none'} />
   </svg>
 );
 export const LoginIcon = (p: P) => (
-  <svg {...navProps(p)}>
-    <path d="M11 20H4a2 2 0 01-2-2V4a2 2 0 012-2h14a2 2 0 012 2v7" />
+  <svg {...base(strip(p))}>
+    <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3" />
   </svg>
 );
 export const LogoutIcon = (p: P) => (

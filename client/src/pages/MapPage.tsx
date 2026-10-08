@@ -10,16 +10,14 @@ const FILTERS = [
   { key: 'all', label: 'Hammasi' },
   { key: 'cowork', label: 'Co-work' },
   { key: 'library', label: 'Kutubxona' },
+  { key: 'cafe', label: 'Kafe' },
 ];
 
-// Viewer position and spread (in %), matching the design's layout; leaves room for the search bar.
-const MAP_CX = 37;
-const MAP_CY = 40;
-const MAP_RX = 36;
-const MAP_RY = 30;
-const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+// Vertical centre/radius (in %) leave room for the search bar at the top.
+const MAP_CY = 58;
+const MAP_RY = 32;
 
-const PIN_COLORS: Record<string, string> = { orange: 'pin-amber' };
+const PIN_COLORS: Record<string, string> = { orange: 'pin-amber', amber: 'pin-amber', rust: 'pin-amber' };
 
 export function MapPage() {
   const me = useMe();
@@ -89,15 +87,12 @@ export function MapPage() {
           </div>
         ) : (
           <>
-            <div className="me-dot" style={{ left: `${MAP_CX}%`, top: `${MAP_CY}%` }} title="Siz" />
+            <div className="me-dot" style={{ left: '50%', top: `${MAP_CY}%` }} title="Siz" />
             {users.map((u) => (
               <button
                 key={u.id}
                 className={`pin ${PIN_COLORS[u.avatarColor] ?? ''} ${selected === u.id ? 'selected' : ''}`}
-                style={{
-                  left: `${clamp(MAP_CX + (u.dx / scale) * MAP_RX, 6, 94)}%`,
-                  top: `${clamp(MAP_CY - (u.dy / scale) * MAP_RY, 18, 94)}%`,
-                }}
+                style={{ left: `${50 + (u.dx / scale) * 44}%`, top: `${MAP_CY - (u.dy / scale) * MAP_RY}%` }}
                 onClick={() => {
                   setSelected(u.id);
                   document.getElementById(`near-${u.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -107,6 +102,9 @@ export function MapPage() {
                 {u.name.charAt(0)}
               </button>
             ))}
+            <button className="map-locate" onClick={locate} aria-label="Joylashuvni yangilash" title="Joylashuvni yangilash">
+              {locating ? <span className="spinner" /> : <LocateIcon size={18} />}
+            </button>
           </>
         )}
       </div>
@@ -118,7 +116,7 @@ export function MapPage() {
         {users.map((u) => (
           <div key={u.id} id={`near-${u.id}`} className={`card near ${selected === u.id ? 'selected' : ''}`} onMouseEnter={() => setSelected(u.id)}>
             <div className="person-row">
-              <Avatar name={u.name} color={u.avatarColor} size={44} radius={12} />
+              <Avatar name={u.name} color={u.avatarColor} size={44} />
               <div className="person-text">
                 <b>{u.name}</b>
                 <small>
@@ -126,10 +124,10 @@ export function MapPage() {
                 </small>
               </div>
             </div>
-            {u.isStudying && u.placeType !== 'online' && (
+            {(u.subject || u.isStudying) && (
               <div className="tags">
                 {u.subject && <Tag>{u.subject}</Tag>}
-                <Tag>Hozir faol</Tag>
+                {u.isStudying && <Tag>Hozir faol</Tag>}
               </div>
             )}
             <div className="btn-row">

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { get, post, type Conversation, type Message, type PublicUser, type Session } from '../api';
-import { BackIcon, PlusCircleIcon, SearchIcon, SendIcon, VideoIcon } from '../components/Icons';
+import { BackIcon, CalendarIcon, PlusCircleIcon, SearchIcon, SendIcon } from '../components/Icons';
 import { ProposeSessionModal, SessionProposal } from '../components/Sessions';
 import { Avatar, Empty, ErrorBox, Loader } from '../components/ui';
 import { errMsg, firstName, timeAgo, timeHM, useFetch, useIsMobile } from '../lib';
@@ -38,20 +38,18 @@ function ConversationList({ activeId }: { activeId: number | null }) {
 
   return (
     <aside className="conv-list">
-      <div className="conv-list-head">
-        <h2>Xabarlar</h2>
-        <div className="conv-search">
-          <SearchIcon size={14} />
-          <input placeholder="Qidirish..." value={q} onChange={(e) => setQ(e.target.value)} aria-label="Suhbatlarni qidirish" />
-        </div>
-        <div className="seg mob-only">
-          <button className={filter === 'all' ? 'active' : ''} onClick={() => setFilter('all')}>
-            Hammasi
-          </button>
-          <button className={filter === 'unread' ? 'active' : ''} onClick={() => setFilter('unread')}>
-            O'qimagan
-          </button>
-        </div>
+      <h2>Xabarlar</h2>
+      <div className="search search-block">
+        <SearchIcon size={16} />
+        <input placeholder="Qidirish..." value={q} onChange={(e) => setQ(e.target.value)} aria-label="Suhbatlarni qidirish" />
+      </div>
+      <div className="seg">
+        <button className={filter === 'all' ? 'active' : ''} onClick={() => setFilter('all')}>
+          Hammasi
+        </button>
+        <button className={filter === 'unread' ? 'active' : ''} onClick={() => setFilter('unread')}>
+          O'qilmagan
+        </button>
       </div>
       <div className="conv-items">
         {loading && !data ? (
@@ -63,16 +61,17 @@ function ConversationList({ activeId }: { activeId: number | null }) {
         ) : (
           data!.conversations.map((c) => (
             <Link key={c.user.id} to={`/chat/${c.user.id}`} className={`conv ${activeId === c.user.id ? 'active' : ''}`}>
-              <Avatar name={c.user.name} color={c.user.avatarColor} size={44} radius={14} online={c.user.online} />
+              <Avatar name={c.user.name} color={c.user.avatarColor} size={44} online={c.user.online} />
               <div className="conv-text">
                 <div className="conv-top">
-                  <b className="desk-only">{firstName(c.user.name)}</b>
-                  <b className="mob-only">{c.user.name}</b>
+                  <b>{c.user.name}</b>
                   <small>{timeAgo(c.lastMessage.createdAt)}</small>
                 </div>
-                <div className={`conv-preview ${c.unread ? 'unread' : ''}`}>{preview(c.lastMessage)}</div>
+                <div className="conv-bottom">
+                  <span className={c.unread ? 'unread' : ''}>{preview(c.lastMessage)}</span>
+                  {c.unread > 0 && <em className="nav-badge">{c.unread}</em>}
+                </div>
               </div>
-              {c.unread > 0 && <em className="conv-badge">{c.unread}</em>}
             </Link>
           ))
         )}
@@ -83,7 +82,7 @@ function ConversationList({ activeId }: { activeId: number | null }) {
 
 function preview(m: Message) {
   if (m.kind === 'session') return `📅 Seans taklifi: ${m.session?.title ?? ''}`;
-  return m.body;
+  return (m.mine ? 'Siz: ' : '') + m.body;
 }
 
 function Conversation({ otherId }: { otherId: number }) {
@@ -189,13 +188,8 @@ function Conversation({ otherId }: { otherId: number }) {
             </small>
           </span>
         </Link>
-        <button
-          className="icon-btn"
-          onClick={() => toast("Video qo'ng'iroq tez orada qo'shiladi", 'info')}
-          aria-label="Video qo'ng'iroq"
-          title="Video qo'ng'iroq"
-        >
-          <VideoIcon />
+        <button className="icon-btn" onClick={() => setProposing(true)} aria-label="Seans taklif qilish" title="Seans taklif qilish">
+          <CalendarIcon />
         </button>
       </header>
 
@@ -219,7 +213,7 @@ function Conversation({ otherId }: { otherId: number }) {
                 <p>{m.body}</p>
                 <small>
                   {timeHM(m.createdAt)}
-                  {m.mine && (m.readAt ? ' ✓✓' : ' ✓')}
+                  {m.mine && <span className="ticks">{m.readAt ? ' ✓✓' : ' ✓'}</span>}
                 </small>
               </div>
             </div>
@@ -229,7 +223,7 @@ function Conversation({ otherId }: { otherId: number }) {
 
       <form className="composer" onSubmit={send}>
         <button type="button" className="icon-btn" onClick={() => setProposing(true)} aria-label="Seans taklif qilish" title="Seans taklif qilish">
-          <PlusCircleIcon size={22} />
+          <PlusCircleIcon />
         </button>
         <input
           placeholder="Xabar yozing..."
@@ -239,7 +233,7 @@ function Conversation({ otherId }: { otherId: number }) {
           aria-label="Xabar"
         />
         <button type="submit" className="send-btn" disabled={!text.trim() || sending} aria-label="Yuborish">
-          <SendIcon size={isMobile ? 14 : 18} />
+          <SendIcon size={18} />
         </button>
       </form>
 

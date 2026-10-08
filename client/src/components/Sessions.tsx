@@ -26,47 +26,29 @@ export function SessionProposal({ session, onChange, compact }: { session: Sessi
   const statusText =
     session.status === 'accepted' ? 'Qabul qilindi ✓' : session.status === 'declined' ? 'Rad etildi' : session.canRespond ? null : 'Javob kutilmoqda…';
 
-  const actions = statusText ? (
-    <div className={`proposal-status status-${session.status}`}>{statusText}</div>
-  ) : (
-    <div className="proposal-actions">
-      <Button size="sm" loading={busy === 'accept'} disabled={!!busy} onClick={() => respond(true)}>
-        {compact ? 'Qabul' : 'Qabul qilish'}
-      </Button>
-      <Button size="sm" variant="secondary" loading={busy === 'decline'} disabled={!!busy} onClick={() => respond(false)}>
-        {compact ? 'Rad' : 'Rad etish'}
-      </Button>
-    </div>
-  );
-
-  // Notification card (bondi-app.html · Bildirishnomalar)
-  if (compact) {
-    return (
-      <div className="proposal proposal-compact">
-        <div className="proposal-box">
-          <div className="proposal-title">
-            {session.title} · {session.place}
-          </div>
-          <div className="proposal-meta">
-            {sessionWhen(session.startsAt)} · {duration(session.durationMin)}
-          </div>
-        </div>
-        {actions}
-      </div>
-    );
-  }
-
-  // Chat card (bondi-web.html · Xabarlar)
   return (
-    <div className="proposal">
-      <div className="proposal-label">
-        <span className="dot" /> O'quv seans taklifi
-      </div>
+    <div className={`proposal ${compact ? 'proposal-compact' : ''}`}>
+      {!compact && (
+        <div className="proposal-label">
+          <span className="dot" /> O'quv seans taklifi
+        </div>
+      )}
       <div className="proposal-title">{session.title}</div>
       <div className="proposal-meta">
         {session.place} · {sessionWhen(session.startsAt)} · {duration(session.durationMin)}
       </div>
-      {actions}
+      {statusText ? (
+        <div className={`proposal-status status-${session.status}`}>{statusText}</div>
+      ) : (
+        <div className="proposal-actions">
+          <Button size="sm" loading={busy === 'accept'} disabled={!!busy} onClick={() => respond(true)}>
+            {compact ? 'Qabul' : 'Qabul qilish'}
+          </Button>
+          <Button size="sm" variant="secondary" loading={busy === 'decline'} disabled={!!busy} onClick={() => respond(false)}>
+            {compact ? 'Rad' : 'Rad etish'}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

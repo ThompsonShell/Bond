@@ -63,8 +63,7 @@ export function Avatar({
         height: size,
         borderRadius: radius ?? Math.round(size * 0.27),
         background: `linear-gradient(135deg, ${a}, ${b})`,
-        color: color === 'green' ? 'var(--avatar-fg)' : 'var(--avatar-fg-alt, #fff)',
-        fontSize: Math.round(size * 0.4),
+        fontSize: Math.round(size * 0.42),
       }}
       aria-hidden
     >
@@ -97,13 +96,12 @@ export function Field({
   label,
   error,
   right,
-  valid,
   ...rest
-}: InputHTMLAttributes<HTMLInputElement> & { label: string; error?: string | null; right?: ReactNode; valid?: boolean }) {
+}: InputHTMLAttributes<HTMLInputElement> & { label: string; error?: string | null; right?: ReactNode }) {
   return (
     <label className="field">
       <span className="field-label">{label}</span>
-      <span className={`input-wrap ${error ? 'has-error' : valid ? 'valid' : ''}`}>
+      <span className={`input-wrap ${error ? 'has-error' : ''}`}>
         <input className="input" {...rest} />
         {right && <span className="input-right">{right}</span>}
       </span>
