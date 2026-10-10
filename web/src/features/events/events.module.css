@@ -1,0 +1,31 @@
+.event {
+  padding: 14px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
+
+.info {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.go {
+  flex: none;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: 0;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.go[aria-pressed='true'] {
+  background: var(--pos-soft);
+  color: var(--pos-text);
+}
