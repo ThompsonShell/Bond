@@ -6,7 +6,7 @@ import { api, ApiError } from '@/lib/api';
 import { MOODS, type JournalState, type Mood } from '@/lib/types';
 import s from './home.module.css';
 
-/** "Kundalik": pick a mood, add a note, save; collapses to "Bugun belgilandi" and bumps the streak. */
+/** Daily journal: pick a mood, add a note, save; then collapses to a "marked for today" state and bumps the streak. */
 export function JournalCard({ initial }: { initial: JournalState }) {
   const [journal, setJournal] = useState(initial);
   const [mood, setMood] = useState<Mood | ''>(initial.today?.mood ?? '');

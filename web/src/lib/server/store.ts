@@ -124,7 +124,7 @@ export function getCounts(): Counts {
   };
 }
 
-/* ───────── Journal (kundalik) ───────── */
+/* ───────── Daily journal ───────── */
 
 export function getJournal(): JournalState {
   const saved = !!db.journal.today;

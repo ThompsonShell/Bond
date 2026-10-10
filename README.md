@@ -1,120 +1,133 @@
 # Bondi — study · connect · grow
 
-Bondi o'quv sherigini topish platformasi: yaqin atrofdagi studentlarni xaritada ko'rish, AI moslik bo'yicha sherik topish, chat orqali o'quv seanslarini rejalashtirish va kunlik maqola yozib seriyani saqlash.
+Bondi is a platform for students to find study partners, chat, and go to events together.
 
-Dizayn manbasi: [`design/bondi-web.html`](design/bondi-web.html) (desktop) va [`design/bondi-app.html`](design/bondi-app.html) (mobil). Frontend ikkala dizaynni ham bitta moslashuvchan (responsive) ilovada amalga oshiradi: keng ekranda sidebar, 860px dan torda pastki tab bar. **Green** va **Light** rejimlari bor.
+This repository contains two separate apps:
 
-## Texnologiyalar
+| Folder | What it is | Design source |
+| ------ | ---------- | ------------- |
+| [`web/`](web/README.md) | **New** Next.js app — 13 pages, four colour themes, mock data behind `/api` route handlers | `bondi-design` handoff (HANDOFF.md) |
+| `client/` + `server/` | First version — React (Vite) frontend with an Express + SQLite backend | [`design/bondi-web.html`](design/bondi-web.html), [`design/bondi-app.html`](design/bondi-app.html) |
 
-| Qism     | Stek                                                                 |
-| -------- | -------------------------------------------------------------------- |
-| Frontend | React 18, TypeScript, Vite, React Router                             |
+The two apps are independent: `web/` has its own `package.json` and is not part of the root npm workspaces. See [`web/README.md`](web/README.md) for the new app. The rest of this file describes the first version (`client/` + `server/`).
+
+---
+
+## First version (`client/` + `server/`)
+
+A study-partner app: see nearby students on a map, find partners by AI match score, plan study sessions in chat, and keep a streak by writing a daily essay. One responsive frontend covers both designs: a sidebar on wide screens and a bottom tab bar below 860px. **Green** and **Light** modes are available.
+
+### Tech stack
+
+| Part     | Stack                                                                  |
+| -------- | ---------------------------------------------------------------------- |
+| Frontend | React 18, TypeScript, Vite, React Router                               |
 | Backend  | Node.js 22, Express 5, TypeScript, SQLite (`node:sqlite`), JWT, Multer |
-| Testlar  | `node:test` (API integratsiya testlari)                              |
+| Tests    | `node:test` (API integration tests)                                    |
 
-Tashqi ma'lumotlar bazasi kerak emas: SQLite fayli birinchi ishga tushirishda avtomatik yaratiladi va demo ma'lumotlar bilan to'ldiriladi.
+No external database is needed: the SQLite file is created on first start and filled with demo data.
 
-## Ishga tushirish
+### Getting started
 
-Talab: **Node.js 22.5+**
+Requires **Node.js 22.5+**.
 
 ```bash
 npm install
 npm run dev          # backend :4000 + frontend :5173
 ```
 
-Brauzerda http://localhost:5173 ni oching.
+Open http://localhost:5173.
 
-**Demo hisob:** `aziz@bondi.uz` / `bondi1234` (boshqa demo foydalanuvchilar: `sardor@`, `madina@`, `dilnoza@`, `bekzod@`… `@bondi.uz`, parol bir xil).
+**Demo account:** `aziz@bondi.uz` / `bondi1234` (other demo users: `sardor@`, `madina@`, `dilnoza@`, `bekzod@`… `@bondi.uz`, same password).
 
-### Production
+#### Production
 
 ```bash
 npm run build        # client/dist + server/dist
-npm start            # http://localhost:4000 — API va frontend bitta serverda
+npm start            # http://localhost:4000 — API and frontend on one server
 ```
 
-### Boshqa buyruqlar
+#### Other commands
 
 ```bash
-npm test             # backend API testlari
-npm run typecheck    # server + client TypeScript tekshiruvi
-npm run seed         # bazani tozalab, demo ma'lumotlarni qayta yuklash
+npm test             # backend API tests
+npm run typecheck    # TypeScript check for server + client
+npm run seed         # wipe the database and reload demo data
 ```
 
-### Muhit o'zgaruvchilari
+#### Environment variables
 
-`.env.example` ga qarang: `PORT`, `JWT_SECRET` (productionda albatta o'zgartiring), `DB_PATH`, `UPLOAD_DIR`, `APP_TZ` (standart `Asia/Tashkent`).
+See `.env.example`: `PORT`, `JWT_SECRET` (always change it in production), `DB_PATH`, `UPLOAD_DIR`, `APP_TZ` (default `Asia/Tashkent`).
 
-## Sahifalar
+### Pages
 
-| Yo'l             | Dizayndagi ekran                       | Nima qiladi                                                                 |
-| ---------------- | -------------------------------------- | --------------------------------------------------------------------------- |
-| `/login`         | Kirish                                 | Email yoki username + parol bilan kirish                                     |
-| `/register`      | Ro'yxat                                | Ro'yxatdan o'tish, username bandligini jonli tekshirish                      |
-| `/onboarding`    | About Me, Interests                    | Bio va kamida 3 ta qiziqish tanlash                                          |
-| `/home`          | Bosh sahifa                            | Statistika, kunlik maqola, bugungi seanslar, hozir o'qiyotganlar             |
-| `/map`           | Xarita                                 | Yaqin atrofdagi sheriklar, filtrlar (Co-work, Kutubxona, Kafe), geolokatsiya |
-| `/chat`, `/chat/:id` | Xabarlar, Chat suhbat              | Suhbatlar ro'yxati, xabarlar, o'quv seans taklifi (qabul/rad)                |
-| `/matching`      | Mos sheriklar / AI Matching            | Moslik foizi bo'yicha saralangan sheriklar, "Bog'lanish"                     |
-| `/profile`, `/u/:id` | Profil                             | Profil, statistika, qiziqishlar, video taqdimot, yaqinda o'qiganlar, tahrirlash |
-| `/notifications` | Bildirishnomalar                       | Takliflar, yangi sheriklar, yaqin atrofdagilar                               |
-| `/settings`      | Sozlamalar                             | Rejim (Yashil/Yorug'), joylashuvni ko'rsatish, profilni yashirish, chiqish  |
+| Route                | Design screen                | What it does                                                              |
+| -------------------- | ---------------------------- | ------------------------------------------------------------------------- |
+| `/login`             | Kirish                       | Sign in with email or username + password                                 |
+| `/register`          | Ro'yxat                      | Sign up, with a live username availability check                          |
+| `/onboarding`        | About Me, Interests          | Bio and at least 3 interests                                              |
+| `/home`              | Bosh sahifa                  | Stats, daily essay, today's sessions, people studying now                 |
+| `/map`               | Xarita                       | Nearby partners, filters (co-work, library, café), geolocation            |
+| `/chat`, `/chat/:id` | Xabarlar, Chat suhbat        | Conversation list, messages, study session proposals (accept/decline)     |
+| `/matching`          | Mos sheriklar / AI Matching  | Partners sorted by match score, "connect" action                          |
+| `/profile`, `/u/:id` | Profil                       | Profile, stats, interests, video intro, recent sessions, editing          |
+| `/notifications`     | Bildirishnomalar             | Invites, new partners, people nearby                                      |
+| `/settings`          | Sozlamalar                   | Theme (Green/Light), location sharing, hide profile, sign out             |
 
-## API
+### API
 
-Barcha himoyalangan so'rovlar `Authorization: Bearer <token>` sarlavhasini talab qiladi.
+All protected requests require an `Authorization: Bearer <token>` header.
 
-| Metod | Yo'l | Tavsif |
-| ----- | ---- | ------ |
+| Method | Path | Description |
+| ------ | ---- | ----------- |
 | POST | `/api/auth/register` | `{ name, email, password, username }` → `{ token, user }` |
 | POST | `/api/auth/login` | `{ email, password }` → `{ token, user }` |
-| GET | `/api/auth/me` | Joriy foydalanuvchi |
-| GET | `/api/auth/username-available?u=` | Username bandligi |
-| PATCH | `/api/users/me` | Profil va sozlamalarni yangilash |
-| POST / DELETE | `/api/users/me/video` | Video taqdimot yuklash (multipart `video`, maks. 50 MB) / o'chirish |
-| GET | `/api/users/interests` | Qiziqishlar ro'yxati |
-| GET | `/api/users/studying-now` | Hozir o'qiyotganlar |
-| GET | `/api/users/nearby?filter=all\|cowork\|library\|cafe&q=` | Xarita uchun yaqin atrofdagilar |
-| GET | `/api/users/matches` | AI moslik bo'yicha sheriklar |
-| GET | `/api/users/:id` | Profil + statistika + moslik |
-| POST | `/api/users/:id/connect` | Sherik bo'lish |
-| GET | `/api/stats/me` | Soatlar, sheriklar, maqolalar, seriya |
-| GET / POST | `/api/essays/today`, `/api/essays` | Kunlik maqola |
-| GET | `/api/sessions/today` | Bugungi seanslar |
-| POST | `/api/sessions` | Seans taklif qilish `{ partnerId, title, place, startsAt, durationMin }` |
+| GET | `/api/auth/me` | Current user |
+| GET | `/api/auth/username-available?u=` | Username availability |
+| PATCH | `/api/users/me` | Update profile and settings |
+| POST / DELETE | `/api/users/me/video` | Upload (multipart `video`, max 50 MB) / delete the video intro |
+| GET | `/api/users/interests` | List of interests |
+| GET | `/api/users/studying-now` | People studying now |
+| GET | `/api/users/nearby?filter=all\|cowork\|library\|cafe&q=` | Nearby people for the map |
+| GET | `/api/users/matches` | Partners ranked by AI match score |
+| GET | `/api/users/:id` | Profile + stats + match |
+| POST | `/api/users/:id/connect` | Become partners |
+| GET | `/api/stats/me` | Hours, partners, essays, streak |
+| GET / POST | `/api/essays/today`, `/api/essays` | Daily essay |
+| GET | `/api/sessions/today` | Today's sessions |
+| POST | `/api/sessions` | Propose a session `{ partnerId, title, place, startsAt, durationMin }` |
 | POST | `/api/sessions/:id/respond` | `{ accept: boolean }` |
-| POST / DELETE | `/api/sessions/:id/join` | Seansga qo'shilish / chiqish |
-| GET | `/api/chat/conversations?filter=all\|unread&q=` | Suhbatlar |
-| GET / POST | `/api/chat/conversations/:userId/messages` | Xabarlar (o'qilgan deb belgilanadi) / yuborish |
-| GET | `/api/chat/unread` | O'qilmagan xabar va bildirishnomalar soni |
-| GET | `/api/notifications` | Bildirishnomalar |
-| POST | `/api/notifications/read-all` | Hammasini o'qilgan qilish |
+| POST / DELETE | `/api/sessions/:id/join` | Join / leave a session |
+| GET | `/api/chat/conversations?filter=all\|unread&q=` | Conversations |
+| GET / POST | `/api/chat/conversations/:userId/messages` | Messages (marked as read) / send |
+| GET | `/api/chat/unread` | Unread message and notification counts |
+| GET | `/api/notifications` | Notifications |
+| POST | `/api/notifications/read-all` | Mark all as read |
 
-### AI moslik qanday hisoblanadi
+#### How the AI match score works
 
-`server/src/matching.ts` — umumiy qiziqishlar (Jaccard o'xshashligi, eng katta vazn), bir xil o'qish vaqti ("Bir xil soat"), bir xil fan, masofa ("Yaqin hudud") va shahar asosida 1–99% ball.
+`server/src/matching.ts` scores 1–99% from shared interests (Jaccard similarity, the largest weight), the same study time, the same subject, distance, and city.
 
-## Loyiha tuzilmasi
+### Project structure
 
 ```
-design/          Claude Design'dan eksport qilingan asl dizaynlar
+design/          original designs exported from Claude Design
 server/src/
-  app.ts         Express ilova (API + production'da frontend)
-  db.ts          SQLite sxema
-  seed.ts        Demo ma'lumotlar
-  matching.ts    Moslik algoritmi
-  routes/        auth, users, home (statistika/maqola/seanslar), chat (+ bildirishnomalar)
-  app.test.ts    API testlari
+  app.ts         Express app (API + frontend in production)
+  db.ts          SQLite schema
+  seed.ts        demo data
+  matching.ts    match algorithm
+  routes/        auth, users, home (stats/essays/sessions), chat (+ notifications)
+  app.test.ts    API tests
 client/src/
-  pages/         Har bir ekran
-  components/    Layout (sidebar/tab bar), UI elementlar, ikonlar, seans kartalari
-  state.tsx      Auth, rejim, o'qilmaganlar, toast
-  styles.css     Dizayn tokenlari (Green/Light) va stillar
+  pages/         one file per screen
+  components/    layout (sidebar/tab bar), UI elements, icons, session cards
+  state.tsx      auth, theme, unread counts, toasts
+  styles.css     design tokens (Green/Light) and styles
 ```
 
-## Hozircha yo'q
+### Not implemented yet
 
-- Google/Apple orqali kirish va parolni tiklash (tugmalar bor, lekin xabar ko'rsatadi — OAuth va email xizmati sozlanishi kerak).
-- Real-time chat WebSocket o'rniga polling (3 soniya) orqali ishlaydi.
-- Interfeys faqat o'zbek tilida.
+- Google/Apple sign-in and password reset: the buttons exist but only show a message (OAuth and an email service still need to be set up).
+- Chat uses polling (every 3 seconds) instead of WebSockets.
+- The UI is in Uzbek only.

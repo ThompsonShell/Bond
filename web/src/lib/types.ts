@@ -26,13 +26,13 @@ export interface Person {
   name: string;
   initials: string;
   tags: Topic[];
-  /** Short extra line, e.g. university or "3 umumiy do’st". */
+  /** Short extra line, e.g. university or number of mutual friends. */
   extra: string;
   university: string;
   matchPercent: number;
   /** Two human-readable reasons shown on the matching card. */
   reasons: [string, string];
-  /** Sub-line shown in "Siz uchun mos" lists. */
+  /** Sub-line shown in the "Recommended for you" lists. */
   matchNote: string;
   requested: boolean;
   invited: boolean;

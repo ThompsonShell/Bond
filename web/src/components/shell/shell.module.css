@@ -38,7 +38,7 @@
   gap: 16px;
 }
 
-/* Narrow-content pages: Tadbirlar, Profil, Bildirishnomalar, Sozlamalar. */
+/* Narrow-content pages: Events, Profile, Notifications, Settings. */
 .mainSlot {
   flex: 999 1 560px;
   min-width: 0;

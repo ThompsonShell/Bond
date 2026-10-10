@@ -14,7 +14,7 @@ interface FieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   hint?: string;
   error?: string | null;
-  /** Extra element on the label row (e.g. "Unutdingizmi?" link). */
+  /** Extra element on the label row (e.g. the "Forgot password?" link). */
   labelAside?: ReactNode;
   className?: string;
 }

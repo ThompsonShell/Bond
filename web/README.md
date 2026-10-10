@@ -1,12 +1,13 @@
 # bondi — web (Next.js)
 
-Bondi ilovasining 13 ta sahifasi `bondi-design` topshirig'i (HANDOFF.md) asosida.
+The 13 pages of the Bondi app, built from the `bondi-design` handoff (HANDOFF.md).
 
-- **Stack:** Next.js (App Router), React, TypeScript, CSS Modules. Qo'shimcha kutubxona yo'q.
-- **Shrift:** Geist (`next/font/google`).
-- **Mavzular:** `olxori` (standart), `olxori-yorug`, `binafsha`, `binafsha-tungi` — `src/app/globals.css`. Mavzu `<html data-theme>` orqali beriladi, Sozlamalardagi Tungi/Yorug' tanlovi cookie'da saqlanadi. Binafsha palitrasiga o'tish: `NEXT_PUBLIC_THEME_FAMILY=binafsha`.
+- **Stack:** Next.js (App Router), React, TypeScript, CSS Modules. No extra libraries.
+- **Font:** Geist (`next/font/google`).
+- **Themes:** `olxori` (default), `olxori-yorug`, `binafsha`, `binafsha-tungi` — defined in `src/app/globals.css`. The theme is set via `<html data-theme>`; the dark/light choice on the Settings page is stored in a cookie. To switch to the binafsha palette, set `NEXT_PUBLIC_THEME_FAMILY=binafsha`.
+- **UI language:** Uzbek. Code, comments and docs are in English.
 
-## Ishga tushirish
+## Getting started
 
 ```bash
 cd web
@@ -15,35 +16,35 @@ npm run dev        # http://localhost:3000
 npm run build && npm start
 ```
 
-## Tuzilma
+## Structure
 
 ```
 src/
   app/
     (auth)/          login, register, reset-password, onboarding/1, onboarding/2
-    (app)/           bosh sahifa (/), chats, matching, discover, events, profile, notifications, settings
-    api/             route handler'lar (mock ma'lumot qatlami ustida)
-    globals.css      rang tokenlari va bazaviy stil
+    (app)/           home (/), chats, matching, discover, events, profile, notifications, settings
+    api/             route handlers on top of the mock data layer
+    globals.css      colour tokens and base styles
   components/
-    ui/              umumiy komponentlar (HANDOFF §7): Button, Card, Avatar, Badge, Chip, MatchPercent,
+    ui/              shared components (HANDOFF §7): Button, Card, Avatar, Badge, Chip, MatchPercent,
                      Field/Input, Tabs, ToggleChip, Switch, DateTile, EmptyState, InlineError, StatusLine, NavItem
-    shell/           ilova qobig'i (chap menyu, badge'lar), kirish oqimi kartasi
-  features/          sahifalarning interaktiv qismlari
+    shell/           app shell (sidebar, unread badges) and the sign-in card frame
+  features/          interactive parts of each page
   lib/
-    mock-data.ts     namuna ma'lumot (bitta joyda)
-    server/store.ts  ma'lumot qatlami — backend tayyor bo'lganda shu faylni almashtiring
-    api.ts           brauzer uchun API klienti
+    mock-data.ts     sample data, in one place
+    server/store.ts  data layer — replace this file when the real backend is ready
+    api.ts           browser-side API client
 ```
 
-## Ma'lumot
+## Data
 
-Sahifalar ma'lumotni `lib/server/store.ts` (server komponentlarda) va `/api/*` (o'zgartirishlar) orqali oladi; namunalar `lib/mock-data.ts` da. Store xotirada ishlaydi — server qayta ishga tushsa, namuna holatiga qaytadi.
+Server components read from `lib/server/store.ts`; mutations go through `/api/*`. Sample data lives in `lib/mock-data.ts`. The store is in memory, so restarting the server resets it to the sample state.
 
-Menyudagi badge'lar haqiqiy holatdan hisoblanadi: suhbat ochilganda yoki bildirishnoma o'qilganda kamayadi, nol bo'lsa ko'rinmaydi.
+The sidebar badges are computed from real state: they go down when a chat is opened or a notification is read, and disappear at zero.
 
-## Dizaynda yo'q (HANDOFF §12) — qilinmagan
+## Not in the design (HANDOFF §12) — not implemented
 
-- Haqiqiy autentifikatsiya: kirish/ro'yxat mock (har qanday to'g'ri email qabul qilinadi). Google/GitHub tugmalari "hali ulanmagan" xabarini ko'rsatadi.
-- Rasm yuklash va izohlar ro'yxati: tugmalar ko'rinadi, lekin o'chirilgan.
-- Boshqa odam profili, Guruhlar/Do'stlar sahifalari, loading va tarmoq xatosi holatlari.
-- Telefon uchun pastki navigatsiya: tor ekranda menyu tepada, kontent ostida (dizayndagi `flex-wrap` xatti-harakati).
+- Real authentication: sign-in and sign-up are mocked (any well-formed email is accepted). The Google/GitHub buttons show a "not connected yet" message.
+- Image upload and the comment list: the buttons are shown but disabled.
+- Other users' profiles, Groups/Friends pages, loading and network-error states.
+- Bottom navigation for phones: on narrow screens the menu stacks above the content (the design's `flex-wrap` behaviour).

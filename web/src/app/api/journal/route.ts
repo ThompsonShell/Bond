@@ -12,7 +12,7 @@ export async function POST(req: Request) {
   return handle(() => saveJournal(String(body.mood ?? ''), String(body.note ?? '')));
 }
 
-/** "O’zgartirish": reopen today's entry for editing. */
+/** "Edit" button: reopen today's entry for editing. */
 export function DELETE() {
   return handle(() => clearJournalToday());
 }
