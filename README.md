@@ -7,7 +7,7 @@ This repository contains two separate apps:
 | Folder | What it is | Design source |
 | ------ | ---------- | ------------- |
 | [`web/`](web/README.md) | **New** Next.js app — 13 pages, four colour themes, mock data behind `/api` route handlers | `bondi-design` handoff (HANDOFF.md) |
-| `client/` + `server/` | First version — React (Vite) frontend with an Express + SQLite backend | [`design/bondi-web.html`](design/bondi-web.html), [`design/bondi-app.html`](design/bondi-app.html) |
+| `client/` + `server/` | First version — React (Vite) frontend with an Express + SQLite backend | First Claude Design export (web + mobile) |
 
 The two apps are independent: `web/` has its own `package.json` and is not part of the root npm workspaces. See [`web/README.md`](web/README.md) for the new app. The rest of this file describes the first version (`client/` + `server/`).
 
@@ -111,7 +111,6 @@ All protected requests require an `Authorization: Bearer <token>` header.
 ### Project structure
 
 ```
-design/          original designs exported from Claude Design
 server/src/
   app.ts         Express app (API + frontend in production)
   db.ts          SQLite schema
