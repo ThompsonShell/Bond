@@ -1,0 +1,81 @@
+/* App shell — HANDOFF §6: centred 1320px container, ~216px menu, main column (flex-wrap on narrow screens). */
+.wrap {
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.side {
+  flex: 1 1 216px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sideBottom {
+  margin-top: auto;
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.userName {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.main {
+  flex: 999 1 560px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Narrow-content pages: Tadbirlar, Profil, Bildirishnomalar, Sozlamalar. */
+.mainSlot {
+  flex: 999 1 560px;
+  min-width: 0;
+}
+
+.narrow {
+  max-width: 760px;
+}
+
+/* Sign-in flow: logo + one card, centred. */
+.auth {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.authInner {
+  width: 100%;
+  padding: 32px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.authCard {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.authCardRoomy {
+  gap: 18px;
+}
+
+.authFoot {
+  text-align: center;
+  font-size: 14px;
+}

@@ -1,0 +1,62 @@
+.sent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sentBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--pos-soft);
+  color: var(--pos-text);
+  font-weight: 500;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stepBar {
+  display: flex;
+  gap: 6px;
+}
+
+.stepBar span {
+  flex: 1 1 0;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+}
+
+.stepBar .stepOn {
+  background: var(--accent);
+}
+
+.footerRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.matchBox {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+
+.matchRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}

@@ -1,0 +1,509 @@
+/* Shared UI primitives — HANDOFF §7. Values mirror the design classes (.btn, .btn2, .gh, .inp, .chip, .pct, .bdg, .av …). */
+
+/* ───────── Text ───────── */
+.h1 {
+  font-weight: 600;
+  font-size: 22px;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.h2 {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.h2Small {
+  font-size: 14px;
+}
+
+.meta {
+  color: var(--text2);
+  font-size: 13px;
+}
+
+.link {
+  color: var(--accent-text);
+  font-weight: 600;
+}
+
+.link:hover {
+  color: var(--accent-text);
+  text-decoration: underline;
+}
+
+/* ───────── Logo ───────── */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px 18px;
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 700;
+  font-size: 19px;
+  letter-spacing: -0.02em;
+}
+
+.logo:hover {
+  color: var(--text);
+}
+
+.logoCentered {
+  padding: 0;
+  justify-content: center;
+}
+
+.logoMark {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--accent);
+  color: var(--on-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* ───────── Card ───────── */
+.card {
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+/* ───────── Buttons ───────── */
+.btn {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 10px;
+  border: 0;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+}
+
+a.btn:hover {
+  color: var(--on-accent);
+}
+
+.btn2 {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+}
+
+a.btn2:hover {
+  color: var(--text);
+}
+
+.ghost {
+  min-height: 44px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 0;
+  background: transparent;
+  color: var(--text2);
+  font-weight: 500;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.btn2:hover:not(:disabled),
+.ghost:hover:not(:disabled) {
+  background: var(--sunken);
+}
+
+.btn:disabled,
+.btn2:disabled {
+  opacity: 0.6;
+}
+
+.iconOnly {
+  width: 44px;
+  padding: 0;
+  justify-content: center;
+  flex: none;
+}
+
+/* ───────── Form ───────── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.input {
+  height: 44px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  min-width: 0;
+  width: 100%;
+}
+
+.onPage {
+  background: var(--surface);
+}
+
+.searchBox {
+  height: 44px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.searchBox input {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: var(--text);
+}
+
+.searchBox:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.error {
+  color: var(--danger);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--pos-text);
+  font-weight: 500;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1 1 auto;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ───────── Small pieces ───────── */
+.avatar {
+  flex: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  background: var(--warm-soft);
+  color: var(--warm-text);
+}
+
+.avatarSelf {
+  background: var(--sunken);
+  color: var(--text);
+}
+
+.badge {
+  margin-left: auto;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background: var(--warm);
+  color: var(--on-warm);
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chip {
+  padding: 1px 8px;
+  border-radius: 6px;
+  background: var(--sunken);
+  color: var(--text2);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.chipAccent {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  font-weight: 600;
+}
+
+.pct {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--pos-soft);
+  color: var(--pos-text);
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ───────── Toggle chip ───────── */
+.toggle {
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.toggleMuted {
+  color: var(--text2);
+}
+
+.toggleStrong[aria-pressed='true'] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.toggleSoft[aria-pressed='true'] {
+  background: var(--accent-soft);
+  border-color: var(--accent-soft);
+  color: var(--accent-text);
+}
+
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chipRowWide {
+  gap: 8px;
+}
+
+/* ───────── Tabs ───────── */
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tab {
+  min-height: 44px;
+  padding: 0 2px;
+  margin-bottom: -1px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text2);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.tab[aria-selected='true'] {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+
+/* ───────── Switch ───────── */
+.switch {
+  flex: none;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+}
+
+.switchTrack {
+  width: 44px;
+  height: 26px;
+  padding: 3px;
+  border-radius: 13px;
+  background: var(--sunken);
+  display: flex;
+  justify-content: flex-start;
+}
+
+.switchKnob {
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  background: var(--text2);
+}
+
+.switch[aria-checked='true'] .switchTrack {
+  background: var(--accent);
+  justify-content: flex-end;
+}
+
+.switch[aria-checked='true'] .switchKnob {
+  background: var(--on-accent);
+}
+
+/* ───────── Date tile ───────── */
+.dateTile {
+  flex: none;
+  width: 40px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--sunken);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.15;
+}
+
+.dateTile .month {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text2);
+}
+
+.dateTile .day {
+  font-size: 16px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.dateTileLarge {
+  width: 52px;
+  height: 56px;
+  border-radius: 12px;
+}
+
+.dateTileLarge .month {
+  font-size: 12px;
+}
+
+.dateTileLarge .day {
+  font-size: 20px;
+}
+
+.dateTileAccent {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+
+.dateTilePos {
+  background: var(--pos-soft);
+  color: var(--pos-text);
+}
+
+.dateTileAccent .month,
+.dateTilePos .month {
+  color: inherit;
+}
+
+/* ───────── Empty state ───────── */
+.empty {
+  padding: 28px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.empty .meta {
+  font-size: 14px;
+}
+
+/* ───────── Nav item ───────── */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 500;
+  color: var(--text2);
+}
+
+.nav:hover {
+  background: var(--sunken);
+}
+
+.navActive {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  font-weight: 600;
+}
+
+.navActive:hover {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+
+/* ───────── Streak dots ───────── */
+.dots {
+  display: flex;
+  gap: 4px;
+}
+
+.dot {
+  width: 18px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border);
+}
+
+.dotLarge {
+  width: 24px;
+  height: 8px;
+  border-radius: 4px;
+}
+
+.dotOn {
+  background: var(--pos);
+}
